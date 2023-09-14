@@ -1,21 +1,21 @@
-#(©)CodeXBotz
+"""
+This is a module docstring.
+"""
 
-
-
-
-import os
 import asyncio
-from pyrogram import Client, filters, __version__
+
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram import Client, filters, __version__
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 from bot import Bot
-from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT
-from helper_func import subscribed, encode, decode, get_messages
+from helper_func import subscribed, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
-
-
+from config import (
+    ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION,
+    DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT
+)
 
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
@@ -70,18 +70,33 @@ async def start_command(client: Client, message: Message):
             else:
                 caption = "" if not msg.caption else msg.caption.html
 
-            if DISABLE_CHANNEL_BUTTON:
-                reply_markup = msg.reply_markup
-            else:
-                reply_markup = None
+            reply_markup = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(text="Join Group", rl="https://t.me/telegram")
+                    ]
+                ]
+            )
 
             try:
-                await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
+                await msg.copy(
+                    chat_id=message.from_user.id,
+                    caption = caption,
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=reply_markup,
+                    protect_content=PROTECT_CONTENT
+                )
                 await asyncio.sleep(0.5)
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
-            except:
+            except FloodWait as error:
+                await asyncio.sleep(error.x)
+                await msg.copy(
+                    chat_id=message.from_user.id,
+                    caption = caption,
+                    parse_mode=ParseMode.HTML,
+                    reply_markup=reply_markup,
+                    protect_content=PROTECT_CONTENT
+                )
+            except Exception:
                 pass
         return
     else:
@@ -106,17 +121,18 @@ async def start_command(client: Client, message: Message):
             quote = True
         )
         return
-
-    
+   
 #=====================================================================================##
 
 WAIT_MSG = """"<b>Processing ...</b>"""
 
-REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
+REPLY_ERROR = """
+<code>Use this command as a replay to any telegram message with out any spaces.</code>
+"""
 
 #=====================================================================================##
 
-    
+
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
