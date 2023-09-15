@@ -73,7 +73,7 @@ async def start_command(client: Client, message: Message):
             reply_markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton(text="Join Group", rl="https://t.me/telegram")
+                        InlineKeyboardButton(text="Join Group", url="https://t.me/+uYzFSdRPG88yYTM9")
                     ]
                 ]
             )
